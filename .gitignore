@@ -1,0 +1,28 @@
+.DS_Store
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.venv/
+.venv312/
+venv/
+env/
+*.pyc
+*.pyo
+*.pyd
+
+# Local app state
+.streamlit/
+
+# Runtime artifacts
+storage/videos/*
+storage/frames/*
+storage/screenshots/*
+storage/workflows/*
+storage/executions/*
+!storage/videos/.gitkeep
+!storage/frames/.gitkeep
+!storage/screenshots/.gitkeep
+!storage/workflows/.gitkeep
+!storage/executions/.gitkeep

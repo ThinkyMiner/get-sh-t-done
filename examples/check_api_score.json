@@ -1,0 +1,73 @@
+{
+  "workflow_name": "check_api_doc_score",
+  "slug": "check-api-doc-score",
+  "description": "Select an API and check its documentation quality score",
+  "inputs": [
+    {
+      "name": "api_name",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://localhost:5500/api-scores",
+      "description": "Open API score checker",
+      "confidence": "high"
+    },
+    {
+      "id": "step_2",
+      "type": "select",
+      "selector_type": "label",
+      "selector_value": "Select API",
+      "option_value": "{{api_name}}",
+      "description": "Select the API from dropdown",
+      "confidence": "high"
+    },
+    {
+      "id": "step_3",
+      "type": "click",
+      "selector_type": "role",
+      "selector_value": "Check Score",
+      "description": "Click check score button",
+      "confidence": "high"
+    },
+    {
+      "id": "step_4",
+      "type": "wait",
+      "duration_ms": 1000,
+      "description": "Wait for score",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_5",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "api-score",
+      "output_key": "score",
+      "description": "Read API score",
+      "confidence": "high"
+    },
+    {
+      "id": "step_6",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "issues-count",
+      "output_key": "issues_count",
+      "description": "Read number of issues",
+      "confidence": "high"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "score",
+      "type": "string"
+    },
+    {
+      "name": "issues_count",
+      "type": "string"
+    }
+  ]
+}

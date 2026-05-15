@@ -1,0 +1,37 @@
+{
+  "workflow_name": "get_monthly_reports",
+  "slug": "get-monthly-reports",
+  "description": "Extract the full monthly reports table",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://localhost:5500/reports",
+      "description": "Open reports page",
+      "confidence": "high"
+    },
+    {
+      "id": "step_2",
+      "type": "wait",
+      "duration_ms": 1000,
+      "description": "Wait for table to load",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_3",
+      "type": "extract_table",
+      "selector_type": "test_id",
+      "selector_value": "reports-table",
+      "output_key": "reports",
+      "description": "Extract all report rows",
+      "confidence": "high"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reports",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "workflow_name": "check_supplier_status",
+  "slug": "check-supplier-status",
+  "description": "Search for a supplier by ID and return their verification status",
+  "inputs": [
+    {
+      "name": "supplier_id",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://localhost:5500/dashboard",
+      "description": "Open supplier dashboard",
+      "confidence": "high"
+    },
+    {
+      "id": "step_2",
+      "type": "fill",
+      "selector_type": "label",
+      "selector_value": "Supplier ID",
+      "value": "{{supplier_id}}",
+      "description": "Enter supplier ID",
+      "confidence": "high"
+    },
+    {
+      "id": "step_3",
+      "type": "click",
+      "selector_type": "role",
+      "selector_value": "Search",
+      "description": "Click search button",
+      "confidence": "high"
+    },
+    {
+      "id": "step_4",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for results",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_5",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "verification-status",
+      "output_key": "verification_status",
+      "description": "Read verification status",
+      "confidence": "high"
+    },
+    {
+      "id": "step_6",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "supplier-name",
+      "output_key": "supplier_name",
+      "description": "Read supplier name",
+      "confidence": "high"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "verification_status",
+      "type": "string"
+    },
+    {
+      "name": "supplier_name",
+      "type": "string"
+    }
+  ]
+}
