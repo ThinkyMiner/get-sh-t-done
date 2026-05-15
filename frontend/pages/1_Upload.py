@@ -59,7 +59,10 @@ if st.button("Analyze Video", disabled=not video_file, type="primary"):
                 timeout=60,
             )
             analyze_resp.raise_for_status()
-            workflow = analyze_resp.json()["workflow_json"]
+            payload = analyze_resp.json()
+            workflow = payload.get("workflow_json") or payload.get("workflow")
+            if not workflow:
+                raise ValueError("Analysis response did not include a workflow")
         except Exception:
             try:
                 local_context = description
@@ -73,7 +76,7 @@ if st.button("Analyze Video", disabled=not video_file, type="primary"):
             except Exception:
                 workflow = clone_mock_workflow()
                 workflow["description"] = description or workflow["description"]
-                if website_url:
+                if website_url and workflow.get("steps"):
                     workflow["steps"][0]["url"] = website_url
                 status.write("Local analyzer unavailable, using static mock workflow.")
 

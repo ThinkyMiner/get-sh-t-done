@@ -105,7 +105,7 @@ if col1.button("Save & Deploy", type="primary"):
         response = requests.post(f"{API_URL}/api/workflows", json=workflow, timeout=15)
         response.raise_for_status()
         result = response.json()
-        st.session_state["active_workflow_id"] = result["workflow_id"]
+        st.session_state["active_workflow_id"] = result.get("workflow_id") or result.get("id")
         st.session_state["active_workflow_slug"] = result["slug"]
         st.success(f"Deployed. Endpoint: POST /api/generated/{result['slug']}/run")
     except Exception:
@@ -118,7 +118,8 @@ if col2.button("Save & Test"):
     try:
         response = requests.post(f"{API_URL}/api/workflows", json=workflow, timeout=15)
         response.raise_for_status()
-        st.session_state["active_workflow_id"] = response.json()["workflow_id"]
+        result = response.json()
+        st.session_state["active_workflow_id"] = result.get("workflow_id") or result.get("id")
     except Exception:
         result = save_workflow(workflow)
         st.session_state["active_workflow_id"] = result["workflow_id"]

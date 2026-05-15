@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API Documentation Score Checker</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-page="api-scores">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">Acme Internal Ops</div>
+        <nav class="nav" aria-label="Primary">
+          <a href="dashboard.html">Supplier Dashboard</a>
+          <a href="api-scores.html">API Scores</a>
+          <a href="reports.html">Reports</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="page-header">
+        <div>
+          <h1>API Documentation Score Checker</h1>
+          <p class="subtle">Inspect current documentation quality signals for internal APIs.</p>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="score-heading">
+        <h2 id="score-heading">Documentation Quality</h2>
+        <div class="form-row">
+          <div class="field">
+            <label for="api-select">Select API</label>
+            <select id="api-select" data-testid="api-select"></select>
+          </div>
+          <button type="button" data-testid="check-btn">Check Score</button>
+        </div>
+        <section class="results" data-testid="score-results-area" hidden>
+          <div class="result-grid">
+            <div class="metric">
+              <span class="metric-label">API Score</span>
+              <span class="metric-value" data-testid="api-score"></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Issues Found</span>
+              <span class="metric-value" data-testid="issues-count"></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Last Checked</span>
+              <span class="metric-value" data-testid="last-checked"></span>
+            </div>
+          </div>
+          <p class="message" data-testid="score-message" aria-live="polite"></p>
+        </section>
+      </section>
+    </main>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

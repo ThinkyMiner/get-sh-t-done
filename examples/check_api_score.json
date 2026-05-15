@@ -1,6 +1,6 @@
 {
   "workflow_name": "check_api_doc_score",
-  "slug": "check-api-doc-score",
+  "slug": "check-api-score",
   "description": "Select an API and check its documentation quality score",
   "inputs": [
     {
@@ -13,7 +13,7 @@
     {
       "id": "step_1",
       "type": "navigate",
-      "url": "http://localhost:5500/api-scores",
+      "url": "http://localhost:5500/api-scores.html",
       "description": "Open API score checker",
       "confidence": "high"
     },
@@ -46,7 +46,7 @@
       "type": "extract_text",
       "selector_type": "test_id",
       "selector_value": "api-score",
-      "output_key": "score",
+      "output_key": "api_score",
       "description": "Read API score",
       "confidence": "high"
     },
@@ -58,15 +58,28 @@
       "output_key": "issues_count",
       "description": "Read number of issues",
       "confidence": "high"
+    },
+    {
+      "id": "step_7",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "last-checked",
+      "output_key": "last_checked",
+      "description": "Read the last checked timestamp",
+      "confidence": "medium"
     }
   ],
   "outputs": [
     {
-      "name": "score",
+      "name": "api_score",
       "type": "string"
     },
     {
       "name": "issues_count",
+      "type": "string"
+    },
+    {
+      "name": "last_checked",
       "type": "string"
     }
   ]

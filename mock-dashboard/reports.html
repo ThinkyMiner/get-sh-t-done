@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monthly Reports</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-page="reports">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">Acme Internal Ops</div>
+        <nav class="nav" aria-label="Primary">
+          <a href="dashboard.html">Supplier Dashboard</a>
+          <a href="api-scores.html">API Scores</a>
+          <a href="reports.html">Reports</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="page-header">
+        <div>
+          <h1>Monthly Reports</h1>
+          <p class="subtle">Browse reporting packs across teams and open details from the table.</p>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="reports-heading">
+        <h2 id="reports-heading">Report Index</h2>
+        <div class="table-wrap">
+          <table data-testid="reports-table">
+            <thead>
+              <tr>
+                <th scope="col">Report Name</th>
+                <th scope="col">Department</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <section class="report-detail panel" data-testid="report-detail" hidden>
+          <h2>Report Details</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Report Name</span>
+              <span class="detail-value" data-field="name"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Department</span>
+              <span class="detail-value" data-field="department"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date</span>
+              <span class="detail-value" data-field="date"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status</span>
+              <span class="detail-value" data-field="status"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Owner</span>
+              <span class="detail-value" data-field="owner"></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Notes</span>
+              <span class="detail-value" data-field="notes"></span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -37,7 +37,7 @@ def _mock_workflow(user_context: str = "") -> dict:
                 {
                     "id": "step_1",
                     "type": "navigate",
-                    "url": "http://localhost:5500/dashboard",
+                    "url": "http://localhost:5500/dashboard.html",
                     "description": "Open the supplier dashboard",
                     "confidence": "high",
                 },
@@ -146,9 +146,7 @@ async def _analyze_with_openai(keyframes: list[dict], user_context: str) -> dict
 
 
 async def analyze_frames(keyframes: list[dict], user_context: str = "") -> dict:
-    """
-    Analyze curated keyframes and return workflow JSON.
-    """
+    """Analyze curated keyframes and return workflow JSON."""
     provider = get_provider()
     if provider == "anthropic" and has_anthropic_key():
         return await _analyze_with_anthropic(keyframes, user_context)
@@ -158,9 +156,7 @@ async def analyze_frames(keyframes: list[dict], user_context: str = "") -> dict:
 
 
 async def analyze_video(video_id: str, video_path: str, user_context: str = "") -> dict:
-    """
-    Full pipeline: video -> keyframes -> LLM -> validated workflow JSON.
-    """
+    """Full pipeline: video -> keyframes -> LLM -> validated workflow JSON."""
     if not Path(video_path).exists():
         raise FileNotFoundError(f"Video not found: {video_path}")
 

@@ -1,13 +1,13 @@
 {
   "workflow_name": "get_monthly_reports",
-  "slug": "get-monthly-reports",
+  "slug": "get-reports-table",
   "description": "Extract the full monthly reports table",
   "inputs": [],
   "steps": [
     {
       "id": "step_1",
       "type": "navigate",
-      "url": "http://localhost:5500/reports",
+      "url": "http://localhost:5500/reports.html",
       "description": "Open reports page",
       "confidence": "high"
     },

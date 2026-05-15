@@ -15,8 +15,9 @@ def render_logs(logs: list[dict]) -> None:
         )
         with st.expander(title):
             st.write(log.get("message", ""))
-            screenshot = log.get("screenshot_path")
+            screenshot = log.get("screenshot_url") or log.get("screenshot_path")
             if screenshot:
-                st.image(f"{API_URL}{screenshot}", caption=f"After {log.get('step_id', '')}")
+                image_url = screenshot if str(screenshot).startswith("http") else f"{API_URL}{screenshot}"
+                st.image(image_url, caption=f"After {log.get('step_id', '')}")
             if status == "ai_fallback":
                 st.info("This step used AI self-healing to locate the element.")

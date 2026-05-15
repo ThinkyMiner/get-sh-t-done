@@ -11,16 +11,22 @@ env/
 *.pyc
 *.pyo
 *.pyd
+.pyuser/
+.ms-playwright/
+.cache/
 
 # Local app state
 .streamlit/
 
 # Runtime artifacts
+storage/*.db
+storage/downloads/*
 storage/videos/*
 storage/frames/*
 storage/screenshots/*
 storage/workflows/*
 storage/executions/*
+!storage/downloads/.gitkeep
 !storage/videos/.gitkeep
 !storage/frames/.gitkeep
 !storage/screenshots/.gitkeep
