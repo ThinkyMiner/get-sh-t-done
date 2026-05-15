@@ -1,0 +1,55 @@
+{
+  "workflow_name": "check_supplier_status",
+  "slug": "check-supplier-status",
+  "description": "Check supplier verification status from dashboard",
+  "inputs": [
+    {
+      "name": "supplier_id",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://localhost:5500/dashboard.html",
+      "description": "Open the supplier dashboard"
+    },
+    {
+      "id": "step_2",
+      "type": "fill",
+      "selector_type": "label",
+      "selector_value": "Supplier ID",
+      "value": "{{supplier_id}}",
+      "description": "Type supplier ID into search box"
+    },
+    {
+      "id": "step_3",
+      "type": "click",
+      "selector_type": "role",
+      "selector_value": "Search",
+      "description": "Click the search button"
+    },
+    {
+      "id": "step_4",
+      "type": "wait",
+      "duration_ms": 600,
+      "description": "Wait for results to load"
+    },
+    {
+      "id": "step_5",
+      "type": "extract_text",
+      "selector_type": "test_id",
+      "selector_value": "verification-status",
+      "output_key": "verification_status",
+      "description": "Read the verification status"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "verification_status",
+      "type": "string"
+    }
+  ]
+}

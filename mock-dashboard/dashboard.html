@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Supplier Verification Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body data-page="dashboard">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">Acme Internal Ops</div>
+        <nav class="nav" aria-label="Primary">
+          <a href="dashboard.html">Supplier Dashboard</a>
+          <a href="api-scores.html">API Scores</a>
+          <a href="reports.html">Reports</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="page-header">
+        <div>
+          <h1>Supplier Verification Dashboard</h1>
+          <p class="subtle">Look up supplier verification records by internal supplier ID.</p>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="supplier-search-heading">
+        <h2 id="supplier-search-heading">Supplier Search</h2>
+        <div class="form-row">
+          <div class="field">
+            <label for="supplier-id">Supplier ID</label>
+            <input id="supplier-id" data-testid="supplier-id-input" type="text" placeholder="SUP001" autocomplete="off">
+          </div>
+          <button type="button" data-testid="search-btn">Search</button>
+        </div>
+        <section class="results" data-testid="results-area" hidden>
+          <div class="result-grid">
+            <div class="metric">
+              <span class="metric-label">Supplier Name</span>
+              <span class="metric-value" data-testid="supplier-name"></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Verification Status</span>
+              <span class="metric-value" data-testid="verification-status"></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Last Verified Date</span>
+              <span class="metric-value" data-testid="last-verified"></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Contact Email</span>
+              <span class="metric-value" data-testid="contact-email"></span>
+            </div>
+          </div>
+          <p class="message" data-testid="supplier-message" aria-live="polite"></p>
+        </section>
+      </section>
+    </main>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "workflow_name": "get_reports_table",
+  "slug": "get-reports-table",
+  "description": "Extract the monthly reports table",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://localhost:5500/reports.html",
+      "description": "Open the reports page"
+    },
+    {
+      "id": "step_2",
+      "type": "extract_table",
+      "selector_type": "test_id",
+      "selector_value": "reports-table",
+      "output_key": "reports",
+      "description": "Extract all report rows"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reports",
+      "type": "array"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+"""Video analysis integration hooks."""
+
