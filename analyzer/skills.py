@@ -10,7 +10,8 @@ import yaml
 
 from analyzer.schema_validator import validate_and_fix
 
-SKILLS_ROOT = Path(__file__).resolve().parent.parent / "workflow_skills"
+SKILLS_ROOT = Path(__file__).resolve().parent.parent / "skills"
+LEGACY_SKILLS_ROOT = Path(__file__).resolve().parent.parent / "workflow_skills"
 
 
 @dataclass(frozen=True)
@@ -18,8 +19,12 @@ class WorkflowSkill:
     name: str
     description: str
     detection_terms: tuple[str, ...]
+    core_instructions: str
     timeline_guidance: str
     workflow_guidance: str
+    agent_display_name: str | None = None
+    agent_short_description: str | None = None
+    agent_default_prompt: str | None = None
     workflow_template: dict[str, Any] | None = None
 
 
@@ -75,20 +80,32 @@ def _read_json_if_exists(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text())
 
 
+def _read_yaml_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    parsed = yaml.safe_load(path.read_text()) or {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
 def _load_skill_folder(path: Path) -> WorkflowSkill | None:
     skill_md_path = path / "SKILL.md"
     if not skill_md_path.exists():
         return None
 
-    frontmatter, _body = _split_frontmatter(skill_md_path.read_text())
+    frontmatter, body = _split_frontmatter(skill_md_path.read_text())
+    agent_meta = _read_yaml_if_exists(path / "agents" / "openai.yaml")
+    interface_meta = agent_meta.get("interface") if isinstance(agent_meta.get("interface"), dict) else agent_meta
     name = str(frontmatter.get("name") or path.name).strip()
     description = str(frontmatter.get("description") or "").strip()
     detection_terms = tuple(str(term).lower() for term in frontmatter.get("detection_terms") or [])
+    core_instructions = body.strip()
     timeline_guidance = _join_texts(
+        core_instructions,
         _read_text_if_exists(path / "references" / "timeline-guidance.md"),
         _read_text_if_exists(path / "references" / "failure-patterns.md"),
     )
     workflow_guidance = _join_texts(
+        core_instructions,
         _read_text_if_exists(path / "references" / "workflow-guidance.md"),
         _read_text_if_exists(path / "references" / "runtime-guidance.md"),
         _read_text_if_exists(path / "references" / "failure-patterns.md"),
@@ -102,19 +119,24 @@ def _load_skill_folder(path: Path) -> WorkflowSkill | None:
         name=name,
         description=description,
         detection_terms=detection_terms,
+        core_instructions=core_instructions,
         timeline_guidance=timeline_guidance,
         workflow_guidance=workflow_guidance,
+        agent_display_name=str(interface_meta.get("display_name") or "").strip() or None,
+        agent_short_description=str(interface_meta.get("short_description") or "").strip() or None,
+        agent_default_prompt=str(interface_meta.get("default_prompt") or "").strip() or None,
         workflow_template=workflow_template,
     )
 
 
 @lru_cache(maxsize=1)
 def load_skills() -> tuple[WorkflowSkill, ...]:
-    if not SKILLS_ROOT.exists():
+    root = SKILLS_ROOT if SKILLS_ROOT.exists() else LEGACY_SKILLS_ROOT
+    if not root.exists():
         return ()
 
     loaded: list[WorkflowSkill] = []
-    for child in sorted(SKILLS_ROOT.iterdir()):
+    for child in sorted(root.iterdir()):
         if not child.is_dir():
             continue
         skill = _load_skill_folder(child)

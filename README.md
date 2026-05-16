@@ -21,7 +21,7 @@ Flow2API turns those repeated clicks into machine-readable, callable interfaces.
 - `video/` frame extraction, deduplication, and keyframe curation
 - `analyzer/` timeline extraction, workflow generation, skill loading, validation
 - `frontend/` Streamlit app
-- `workflow_skills/` app/domain skills used by the analyzer pipeline
+- `skills/` app/domain skills used by the analyzer pipeline
 - `examples/` runnable workflow fixtures
 - `mock-dashboard/` local mock target app
 - `storage/` runtime DB, uploads, screenshots, browser profiles, frames
@@ -40,10 +40,11 @@ Flow2API turns those repeated clicks into machine-readable, callable interfaces.
 
 ## Skill System
 
-The pipeline now uses real skill folders under `workflow_skills/`.
+The pipeline now uses real skill folders under `skills/`.
 
 Each skill folder contains:
 - `SKILL.md`
+- `agents/openai.yaml`
 - `references/timeline-guidance.md`
 - `references/workflow-guidance.md`
 - optional `references/runtime-guidance.md`
@@ -71,6 +72,12 @@ Skills are applied in three places:
 - before timeline generation, to shape what the model notices
 - before workflow generation, to shape selectors, auth, frames, and outputs
 - after workflow generation, to apply a canonical fallback template when the generic model output is still weak
+
+Validate the skill folders with:
+
+```bash
+./.venv312/bin/python scripts/validate_skills.py
+```
 
 ## WebERP Notes
 

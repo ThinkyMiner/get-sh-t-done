@@ -1,0 +1,4 @@
+interface:
+  display_name: WebERP Company Verification
+  short_description: Convert WebERP company-search and verification flows into stable, executable workflow steps.
+  default_prompt: Analyze the WebERP workflow, respect auth and frame boundaries, and produce a runnable company-verification workflow with normalized outputs.

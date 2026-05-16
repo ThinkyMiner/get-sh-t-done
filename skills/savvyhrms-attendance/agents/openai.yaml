@@ -1,0 +1,4 @@
+interface:
+  display_name: SavvyHRMS Attendance
+  short_description: Convert SavvyHRMS attendance recordings into stable, post-login attendance workflows.
+  default_prompt: Analyze the SavvyHRMS flow, avoid overfitting to personal account selectors, and produce a runnable attendance workflow with confirmation extraction.
