@@ -5,7 +5,7 @@ Flow2API: Turn Repetitive Internal Workflows into Instant APIs
 
 ## Team
 - Kaushlendra - Assistant Product Manager
-- Kartikey - Engineer
+- Kartik - Engineer
 - Vijay - Engineer
 
 ## Demo Length
@@ -39,7 +39,7 @@ One internal workflow that normally requires a person to log in, search a compan
 
 ## 2. Why Now
 
-### Speaker: Kartikey
+### Speaker: Kartik
 "This becomes possible now because vision models are finally good enough to understand workflows from UI recordings, and browser automation is mature enough to replay those workflows in a controlled, logged, auditable way."
 
 "So instead of building a custom integration for every single internal process, we can watch the process once, structure it, and expose it as an API."
@@ -75,7 +75,7 @@ One internal workflow that normally requires a person to log in, search a compan
   - live run
   - returned JSON
 
-### Speaker: Kartikey
+### Speaker: Kartik
 "Under the hood, the system handles the real execution complexity."
 
 "It manages authentication boundaries, browser context, frame navigation, and structured extraction from internal application screens."
@@ -116,7 +116,7 @@ One internal workflow that normally requires a person to log in, search a compan
 - Show execution logs and screenshots briefly.
 - Show that the run is traceable step by step.
 
-### Speaker: Kartikey
+### Speaker: Kartik
 "This is important because enterprise automation is not just about getting a result once."
 
 "It has to be observable. It has to be debuggable. And it has to work on real internal systems, not just clean public websites."
@@ -181,7 +181,7 @@ One internal workflow that normally requires a person to log in, search a compan
 ### Kaushlendra
 "A lot of internal productivity is still blocked by repeated dashboard work. Humans click through the same screens every day just to retrieve structured information."
 
-### Kartikey
+### Kartik
 "We built Flow2API to convert those repeatable UI workflows into APIs using vision understanding plus browser execution."
 
 ### Vijay
