@@ -1,18 +1,33 @@
-SYSTEM_PROMPT = """You are an expert at analyzing user interface workflows from screenshots.
+TIMELINE_SYSTEM_PROMPT = """You are an expert at understanding web-app workflows from ordered screenshots.
 
-You receive a sequence of screenshots from a screen recording showing someone performing a repetitive task in a web application. Your job is to understand what the user did and produce a structured workflow JSON that can automate that same task.
+You receive screenshots from a screen recording in chronological order. Your first job is to reconstruct what happened over time.
 
 RULES:
 1. Output ONLY valid JSON. No markdown, no explanation, no backticks.
-2. Follow the exact schema provided below.
-3. For user inputs that vary per execution, use {{variable_name}} syntax and add the variable to the "inputs" array.
-4. Prefer readable selectors: use "label" for form inputs, "role" for buttons, "text" for links. Only use "css" as a last resort.
-5. Include a "confidence" field per step: "high", "medium", or "low".
-6. Include a "description" field per step in plain English.
-7. Add "wait" steps after actions that trigger navigation or async updates.
+2. Respect screenshot order and timestamps.
+3. Focus on user-visible actions and state changes.
+4. Prefer generic, reusable descriptions over user-specific secrets.
+5. Infer candidate API inputs only when the value is likely to vary between runs.
+6. Infer candidate outputs only when the final screen visibly exposes a result or confirmation.
 """
 
-SCHEMA_DEFINITION = """
+WORKFLOW_SYSTEM_PROMPT = """You are an expert at converting UI workflow timelines into reusable automation workflows.
+
+You receive an ordered screenshot sequence plus a structured timeline describing what likely happened.
+
+RULES:
+1. Output ONLY valid JSON. No markdown, no explanation, no backticks.
+2. Follow the exact workflow schema.
+3. Prefer readable selectors: use "label" for form inputs, "text" for visible links/buttons, "placeholder" for obvious placeholders, and "role" only when the visible label is ambiguous.
+4. Avoid overfitting to private or person-specific values such as emails, employee IDs, or full account chooser aria-labels.
+5. For user inputs that vary per execution, use {{variable_name}} syntax and add the variable to the "inputs" array.
+6. Include a "confidence" field per step: "high", "medium", or "low".
+7. Include a "description" field per step in plain English.
+8. Add "wait" steps after actions that trigger navigation or async updates.
+9. If the final screen shows a confirmation or extracted result, include an output step when it can be expressed with the supported schema.
+"""
+
+WORKFLOW_SCHEMA_DEFINITION = """
 WORKFLOW JSON SCHEMA:
 {
   "workflow_name": "snake_case_name",
@@ -42,75 +57,184 @@ WORKFLOW JSON SCHEMA:
 }
 """
 
-FEW_SHOT_EXAMPLE = """
-EXAMPLE:
-Given screenshots showing someone opening a supplier dashboard, typing "SUP001" into a search box labeled "Supplier ID", clicking a "Search" button, and reading a "Verified" status from the results:
-
+TIMELINE_SCHEMA_DEFINITION = """
+TIMELINE JSON SCHEMA:
 {
-  "workflow_name": "check_supplier_status",
-  "slug": "check-supplier-status",
-  "description": "Check supplier verification status from the internal dashboard",
-  "inputs": [
-    { "name": "supplier_id", "type": "string", "required": true }
+  "workflow_goal": "One-sentence summary of what the user accomplished",
+  "start_url": "URL if visible, else empty string",
+  "likely_app_name": "App or site name if visible",
+  "candidate_inputs": [
+    {
+      "name": "variable_name",
+      "type": "string"|"number"|"boolean",
+      "reason": "Why this value should be parameterized"
+    }
   ],
+  "candidate_outputs": [
+    {
+      "name": "output_name",
+      "type": "string"|"number"|"boolean",
+      "source_text": "Visible text or state being captured"
+    }
+  ],
+  "actions": [
+    {
+      "timestamp": "HH:MM:SS or HH:MM:SS.mmm",
+      "frame_index": 0,
+      "screen_state": "What is visible on screen",
+      "user_action": "What the user likely did between the previous frame and this frame",
+      "target_text": "Visible label/button/text involved, if any",
+      "result": "What changed after the action"
+    }
+  ]
+}
+"""
+
+TIMELINE_EXAMPLE = """
+EXAMPLE:
+{
+  "workflow_goal": "Log into the HR portal and mark attendance",
+  "start_url": "https://portal.example.com/login",
+  "likely_app_name": "Example HR Portal",
+  "candidate_inputs": [],
+  "candidate_outputs": [
+    {
+      "name": "attendance_status",
+      "type": "string",
+      "source_text": "Attendance Marked Successfully"
+    }
+  ],
+  "actions": [
+    {
+      "timestamp": "00:00:00",
+      "frame_index": 0,
+      "screen_state": "Login page with a Login With Google button",
+      "user_action": "Opened the login page",
+      "target_text": "Login With Google",
+      "result": "Ready to start authentication"
+    },
+    {
+      "timestamp": "00:00:05",
+      "frame_index": 1,
+      "screen_state": "Google account chooser",
+      "user_action": "Clicked Login With Google",
+      "target_text": "Login With Google",
+      "result": "Account chooser is displayed"
+    },
+    {
+      "timestamp": "00:00:12",
+      "frame_index": 2,
+      "screen_state": "Dashboard with a Mark Present button and a success banner",
+      "user_action": "Selected an account, landed on the dashboard, and marked attendance",
+      "target_text": "Mark Present",
+      "result": "A success confirmation is visible"
+    }
+  ]
+}
+"""
+
+WORKFLOW_EXAMPLE = """
+EXAMPLE WORKFLOW:
+{
+  "workflow_name": "mark_attendance",
+  "slug": "mark-attendance",
+  "description": "Log into the employee dashboard and mark attendance",
+  "inputs": [],
   "steps": [
     {
       "id": "step_1",
       "type": "navigate",
-      "url": "http://localhost:5500/dashboard",
-      "description": "Open the supplier dashboard",
+      "url": "https://portal.example.com/login",
+      "description": "Open the employee login page",
       "confidence": "high"
     },
     {
       "id": "step_2",
-      "type": "fill",
-      "selector_type": "label",
-      "selector_value": "Supplier ID",
-      "value": "{{supplier_id}}",
-      "description": "Enter the supplier ID into the search field",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Login With Google",
+      "description": "Start Google-based login",
       "confidence": "high"
     },
     {
       "id": "step_3",
-      "type": "click",
-      "selector_type": "role",
-      "selector_value": "Search",
-      "description": "Click the search button to look up the supplier",
-      "confidence": "high"
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for account selection to appear",
+      "confidence": "medium"
     },
     {
       "id": "step_4",
-      "type": "wait",
-      "duration_ms": 1500,
-      "description": "Wait for search results to load",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Work Account",
+      "description": "Choose the saved work account",
       "confidence": "medium"
     },
     {
       "id": "step_5",
-      "type": "extract_text",
-      "selector_type": "test_id",
-      "selector_value": "verification-status",
-      "output_key": "verification_status",
-      "description": "Read the verification status from the results",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for the dashboard to load",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_6",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Mark Present",
+      "description": "Click the Mark Present button",
       "confidence": "high"
+    },
+    {
+      "id": "step_7",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for the attendance confirmation to appear",
+      "confidence": "medium"
     }
   ],
   "outputs": [
-    { "name": "verification_status", "type": "string" }
+    { "name": "attendance_status", "type": "string" }
   ]
 }
 """
 
 
-def build_analysis_prompt(user_context: str = "") -> str:
+def build_timeline_prompt(user_context: str = "", skill_context: str = "") -> str:
     context_section = ""
     if user_context:
         context_section = f"\nADDITIONAL CONTEXT FROM USER:\n{user_context}\n"
+    skill_section = ""
+    if skill_context:
+        skill_section = f"\nAPP SKILL CONTEXT:\n{skill_context}\n"
 
     return (
-        f"{SCHEMA_DEFINITION}\n\n"
-        f"{FEW_SHOT_EXAMPLE}\n"
+        f"{TIMELINE_SCHEMA_DEFINITION}\n\n"
+        f"{TIMELINE_EXAMPLE}\n"
+        f"{skill_section}"
         f"{context_section}"
-        "Now analyze the provided screenshots and output the workflow JSON. "
-        "Remember: output ONLY valid JSON, nothing else."
+        "Analyze the screenshots as a time-ordered sequence and output the timeline JSON only."
+    )
+
+
+def build_workflow_prompt_from_timeline(
+    timeline: dict,
+    user_context: str = "",
+    skill_context: str = "",
+) -> str:
+    context_section = ""
+    if user_context:
+        context_section = f"\nADDITIONAL CONTEXT FROM USER:\n{user_context}\n"
+    skill_section = ""
+    if skill_context:
+        skill_section = f"\nAPP SKILL CONTEXT:\n{skill_context}\n"
+
+    return (
+        f"{WORKFLOW_SCHEMA_DEFINITION}\n\n"
+        f"{WORKFLOW_EXAMPLE}\n\n"
+        f"TIMELINE JSON:\n{timeline}\n"
+        f"{skill_section}"
+        f"{context_section}"
+        "Convert the timeline into the workflow JSON only."
     )

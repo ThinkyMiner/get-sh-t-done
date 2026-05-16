@@ -6,23 +6,36 @@ from typing import Any
 
 from .exceptions import VariableResolutionError
 
-VARIABLE_PATTERN = re.compile(r"\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}")
+VARIABLE_PATTERN = re.compile(
+    r"\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\[(\d+)\])?\s*\}\}"
+)
+
+
+def _resolve_variable(variable_name: str, index: str | None, inputs: dict[str, Any]) -> Any:
+    if variable_name not in inputs:
+        raise VariableResolutionError(f"Missing input variable: {variable_name}")
+
+    value = inputs[variable_name]
+    if index is None:
+        return value
+
+    position = int(index)
+    try:
+        return value[position]
+    except (IndexError, KeyError, TypeError) as exc:
+        raise VariableResolutionError(
+            f"Unable to resolve index [{position}] for variable: {variable_name}"
+        ) from exc
 
 
 def resolve_value(value: Any, inputs: dict[str, Any]) -> Any:
     if isinstance(value, str):
         exact_match = VARIABLE_PATTERN.fullmatch(value)
         if exact_match:
-            variable_name = exact_match.group(1)
-            if variable_name not in inputs:
-                raise VariableResolutionError(f"Missing input variable: {variable_name}")
-            return inputs[variable_name]
+            return _resolve_variable(exact_match.group(1), exact_match.group(2), inputs)
 
         def replace(match: re.Match[str]) -> str:
-            variable_name = match.group(1)
-            if variable_name not in inputs:
-                raise VariableResolutionError(f"Missing input variable: {variable_name}")
-            return str(inputs[variable_name])
+            return str(_resolve_variable(match.group(1), match.group(2), inputs))
 
         return VARIABLE_PATTERN.sub(replace, value)
 
@@ -39,4 +52,3 @@ def resolve_workflow_variables(workflow: dict[str, Any], inputs: dict[str, Any])
     resolved = deepcopy(workflow)
     resolved["steps"] = resolve_value(resolved.get("steps", []), inputs)
     return resolved
-

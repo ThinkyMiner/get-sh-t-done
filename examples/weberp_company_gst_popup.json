@@ -1,0 +1,169 @@
+{
+  "workflow_name": "weberp_company_gst_popup",
+  "slug": "weberp-company-gst-popup",
+  "description": "Log into WebERP, search a company by GLID, open the company detail frame, and capture the GST popup content.",
+  "inputs": [
+    {
+      "name": "login_otp",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "search_query",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "https://weberp.intermesh.net/login.aspx",
+      "description": "Open the WebERP login page"
+    },
+    {
+      "id": "step_2",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Sign in with Google",
+      "description": "Start Google sign-in for WebERP",
+      "switch_to_popup": true
+    },
+    {
+      "id": "step_3",
+      "type": "wait",
+      "duration_ms": 2500,
+      "description": "Wait for either the OTP screen or the already-authenticated dashboard"
+    },
+    {
+      "id": "step_4",
+      "type": "fill",
+      "selector_type": "css",
+      "selector_value": "#userotp1",
+      "value": "{{login_otp[0]}}",
+      "description": "Enter OTP digit 1 if the OTP screen is shown"
+    },
+    {
+      "id": "step_5",
+      "type": "fill",
+      "selector_type": "css",
+      "selector_value": "#userotp2",
+      "value": "{{login_otp[1]}}",
+      "description": "Enter OTP digit 2 if the OTP screen is shown"
+    },
+    {
+      "id": "step_6",
+      "type": "fill",
+      "selector_type": "css",
+      "selector_value": "#userotp3",
+      "value": "{{login_otp[2]}}",
+      "description": "Enter OTP digit 3 if the OTP screen is shown"
+    },
+    {
+      "id": "step_7",
+      "type": "fill",
+      "selector_type": "css",
+      "selector_value": "#userotp4",
+      "value": "{{login_otp[3]}}",
+      "description": "Enter OTP digit 4 if the OTP screen is shown"
+    },
+    {
+      "id": "step_8",
+      "type": "click",
+      "selector_type": "css",
+      "selector_value": "#verifyOTPLogin",
+      "description": "Verify the OTP if the OTP screen is shown"
+    },
+    {
+      "id": "step_9",
+      "type": "wait",
+      "duration_ms": 5000,
+      "description": "Wait for the WebERP dashboard to finish loading",
+      "scope": "root_page",
+      "switch_to_root_page": true
+    },
+    {
+      "id": "step_10",
+      "type": "fill",
+      "selector_type": "placeholder",
+      "selector_value": "Search by Company Name, GLID, Mobile, GST, PNS...",
+      "value": "{{search_query}}",
+      "description": "Enter the target GLID into the dashboard search bar"
+    },
+    {
+      "id": "step_11",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for the company autocomplete result to appear"
+    },
+    {
+      "id": "step_12",
+      "type": "click",
+      "selector_type": "css",
+      "selector_value": "#CompList a[href*='glid={{search_query}}']",
+      "description": "Open the company detail result from the autocomplete list",
+      "switch_to_frame_name": "IframeSTS"
+    },
+    {
+      "id": "step_13",
+      "type": "wait",
+      "duration_ms": 9000,
+      "description": "Wait for the company detail frame to load"
+    },
+    {
+      "id": "step_13b",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "View More",
+      "description": "Expand the company summary panel",
+      "scope": "root_frame:TopBar1_topbarIframe"
+    },
+    {
+      "id": "step_14",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for the company summary iframe to load"
+    },
+    {
+      "id": "step_15",
+      "type": "extract_text",
+      "selector_type": "text",
+      "selector_value": "GST Verified",
+      "output_key": "gst_status",
+      "description": "Extract the GST status from the summary iframe",
+      "scope": "root_frame:viewmoreIframe"
+    },
+    {
+      "id": "step_16",
+      "type": "extract_text",
+      "selector_type": "text",
+      "selector_value": "CIN Verified",
+      "output_key": "cin_status",
+      "description": "Extract the CIN status from the summary iframe",
+      "scope": "root_frame:viewmoreIframe"
+    },
+    {
+      "id": "step_17",
+      "type": "extract_text",
+      "selector_type": "text",
+      "selector_value": "Address not Verified",
+      "output_key": "address_status",
+      "description": "Extract the address verification status from the summary iframe",
+      "scope": "root_frame:viewmoreIframe"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "gst_status",
+      "type": "string"
+    },
+    {
+      "name": "cin_status",
+      "type": "string"
+    },
+    {
+      "name": "address_status",
+      "type": "string"
+    }
+  ]
+}

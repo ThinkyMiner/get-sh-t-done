@@ -72,7 +72,16 @@ def generate_docs(workflow: dict[str, Any]) -> dict[str, Any]:
 
 @router.post("")
 async def create_workflow(workflow: dict[str, Any] = Body(...)) -> dict[str, Any]:
-    return database.create_workflow(workflow, force_slug=True)
+    created = database.create_workflow(workflow, force_slug=True)
+    return {
+        "status": "created",
+        "workflow_id": created["id"],
+        "id": created["id"],
+        "slug": created["slug"],
+        "name": created["name"],
+        "workflow": created["workflow_json"],
+        "workflow_json": created["workflow_json"],
+    }
 
 
 @router.get("")
@@ -127,7 +136,15 @@ async def update_workflow(
     updated = database.update_workflow(workflow_id, workflow)
     if updated is None:
         raise HTTPException(status_code=404, detail="Workflow not found")
-    return updated
+    return {
+        "status": "updated",
+        "workflow_id": updated["id"],
+        "id": updated["id"],
+        "slug": updated["slug"],
+        "name": updated["name"],
+        "workflow": updated["workflow_json"],
+        "workflow_json": updated["workflow_json"],
+    }
 
 
 @router.delete("/{workflow_id}")
@@ -136,4 +153,3 @@ async def delete_workflow(workflow_id: str) -> dict[str, bool]:
     if not deleted:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return {"deleted": True}
-

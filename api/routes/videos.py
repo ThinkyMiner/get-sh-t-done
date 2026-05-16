@@ -9,6 +9,20 @@ from api.storage import save_video_upload
 router = APIRouter(prefix="/api/videos", tags=["videos"])
 
 
+def _confidence_score(workflow: dict[str, object]) -> float:
+    weights = {"high": 0.9, "medium": 0.7, "low": 0.5}
+    steps = workflow.get("steps", [])
+    if not isinstance(steps, list) or not steps:
+        return 0.0
+    scores: list[float] = []
+    for step in steps:
+        if isinstance(step, dict):
+            scores.append(weights.get(str(step.get("confidence", "medium")).lower(), 0.7))
+    if not scores:
+        return 0.0
+    return round(sum(scores) / len(scores), 2)
+
+
 @router.post("/upload")
 async def upload_video(file: UploadFile = File(...)) -> dict[str, object]:
     video_id, file_path = await save_video_upload(file)
@@ -62,6 +76,7 @@ async def analyze_video_endpoint(
     database.update_video(video_id, status="analyzed", workflow_id=saved["id"])
     return {
         "status": "completed",
+        "confidence": _confidence_score(saved["workflow_json"]),
         "workflow_id": saved["id"],
         "workflow": saved["workflow_json"],
         "workflow_json": saved["workflow_json"],

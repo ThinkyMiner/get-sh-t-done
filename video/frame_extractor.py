@@ -7,8 +7,19 @@ import subprocess
 from pathlib import Path
 
 
-def _format_timestamp(seconds: int) -> str:
-    return f"{seconds // 3600:02d}:{(seconds % 3600) // 60:02d}:{seconds % 60:02d}"
+def _format_timestamp(seconds: float) -> str:
+    whole_seconds = int(seconds)
+    milliseconds = int(round((seconds - whole_seconds) * 1000))
+    if milliseconds == 1000:
+        whole_seconds += 1
+        milliseconds = 0
+
+    hours = whole_seconds // 3600
+    minutes = (whole_seconds % 3600) // 60
+    secs = whole_seconds % 60
+    if milliseconds:
+        return f"{hours:02d}:{minutes:02d}:{secs:02d}.{milliseconds:03d}"
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}"
 
 
 def extract_frames(video_path: str, output_dir: str, fps: float = 0.5) -> list[dict]:
@@ -49,12 +60,11 @@ def extract_frames(video_path: str, output_dir: str, fps: float = 0.5) -> list[d
 
     frames = sorted(glob.glob(str(Path(output_dir) / "frame_*.png")))
     result: list[dict] = []
-    interval_seconds = int(round(1 / fps))
     for index, path in enumerate(frames):
         result.append(
             {
                 "index": index,
-                "timestamp": _format_timestamp(index * interval_seconds),
+                "timestamp": _format_timestamp(index / fps),
                 "path": path,
             }
         )

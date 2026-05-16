@@ -6,6 +6,7 @@ VALID_STEP_TYPES = {
     "navigate",
     "fill",
     "click",
+    "press_key",
     "select",
     "wait",
     "extract_text",

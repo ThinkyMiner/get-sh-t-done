@@ -40,6 +40,22 @@ async def handle_click(
     await locator.click()
 
 
+async def handle_press_key(
+    page: Page,
+    step: dict[str, Any],
+    outputs: dict[str, Any],
+    execution_id: str,
+) -> None:
+    key = str(step.get("key") or "Enter")
+    selector_type = step.get("selector_type")
+    selector_value = step.get("selector_value")
+    if selector_type and selector_value:
+        locator = resolve(page, selector_type, selector_value)
+        await locator.press(key)
+        return
+    await page.keyboard.press(key)
+
+
 async def handle_select(
     page: Page,
     step: dict[str, Any],
@@ -120,6 +136,7 @@ HANDLERS: dict[str, StepHandler] = {
     "navigate": handle_navigate,
     "fill": handle_fill,
     "click": handle_click,
+    "press_key": handle_press_key,
     "select": handle_select,
     "wait": handle_wait,
     "extract_text": handle_extract_text,

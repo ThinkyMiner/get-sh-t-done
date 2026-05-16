@@ -1,0 +1,60 @@
+{
+  "workflow_name": "mark_attendance_hrms",
+  "slug": "mark-attendance-hrms",
+  "description": "Log into SavvyHRMS and mark attendance.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "step_1",
+      "type": "navigate",
+      "url": "http://indiamart.savvyhrms.in/SavvyHRMS/LoginPage.aspx",
+      "description": "Open the HRMS login page",
+      "confidence": "high"
+    },
+    {
+      "id": "step_2",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Login With Google",
+      "description": "Start Google sign-in",
+      "confidence": "high"
+    },
+    {
+      "id": "step_3",
+      "type": "wait",
+      "duration_ms": 2000,
+      "description": "Wait for authentication to complete",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_4",
+      "type": "click",
+      "selector_type": "text",
+      "selector_value": "Mark Present",
+      "description": "Mark attendance from the dashboard",
+      "confidence": "high"
+    },
+    {
+      "id": "step_5",
+      "type": "wait",
+      "duration_ms": 1500,
+      "description": "Wait for the confirmation to appear",
+      "confidence": "medium"
+    },
+    {
+      "id": "step_6",
+      "type": "extract_text",
+      "selector_type": "text",
+      "selector_value": "Attendance Marked Successfully",
+      "output_key": "attendance_status",
+      "description": "Read the attendance confirmation",
+      "confidence": "high"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "attendance_status",
+      "type": "string"
+    }
+  ]
+}

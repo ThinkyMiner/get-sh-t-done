@@ -26,9 +26,11 @@ storage/frames/*
 storage/screenshots/*
 storage/workflows/*
 storage/executions/*
+storage/browser_profiles/*
 !storage/downloads/.gitkeep
 !storage/videos/.gitkeep
 !storage/frames/.gitkeep
 !storage/screenshots/.gitkeep
 !storage/workflows/.gitkeep
 !storage/executions/.gitkeep
+!storage/browser_profiles/.gitkeep
